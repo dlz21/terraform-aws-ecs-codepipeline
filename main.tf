@@ -1,5 +1,6 @@
 locals {
   enabled = "${var.enabled == "true" ? true : false}"
+  blue_green_enabled = "${var.blue_green_enabled == "true" ? true : false}"
 }
 
 module "codepipeline_label" {
@@ -201,7 +202,7 @@ resource "aws_iam_role_policy_attachment" "codebuild_s3" {
 }
 
 resource "aws_codepipeline" "source_build_deploy" {
-  count    = "${local.enabled ? 1 : 0}"
+  count    = "${local.enabled * local.blue_green_enabled ? 0 : 1}"
   name     = "${module.codepipeline_label.id}"
   role_arn = "${aws_iam_role.default.arn}"
 
