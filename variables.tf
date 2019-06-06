@@ -179,3 +179,18 @@ variable "s3_bucket_force_destroy" {
   description = "A boolean that indicates all objects should be deleted from the CodePipeline artifact store S3 bucket so that the bucket can be destroyed without error"
   default     = false
 }
+
+variable "blue_green_enabled" {
+  description = "A boolean that indicates whether the deployment should use blue green."
+  default     = false
+}
+
+variable "code_deploy_application_name" {
+  description = "The application name for CodeDeployToECS"
+  default     = ""
+}
+
+variable "code_deploy_deployment_group_name" {
+  description = "The group name for CodeDeployToECS"
+  default     = ""
+}
