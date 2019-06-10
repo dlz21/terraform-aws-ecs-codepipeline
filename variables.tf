@@ -182,7 +182,7 @@ variable "s3_bucket_force_destroy" {
 
 variable "blue_green_enabled" {
   description = "A boolean that indicates whether the deployment should use blue green."
-  default     = false
+  default     = "false"
 }
 
 variable "code_deploy_application_name" {

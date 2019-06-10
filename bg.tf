@@ -1,5 +1,5 @@
 resource "aws_codepipeline" "source_build_deploy_bg" {
-  count    = "${local.enabled * local.blue_green_enabled ? 1 : 0}"
+  count    = "${local.enabled && local.blue_green_enabled ? 1 : 0}"
   name     = "${module.codepipeline_label.id}"
   role_arn = "${aws_iam_role.default.arn}"
 
