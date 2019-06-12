@@ -105,7 +105,12 @@ module "codepipeline_codedeploy_policy_label" {
   tags       = "${var.tags}"
 }
 
-resource "aws_iam_policy" "ecs_limited" {
+resource "aws_iam_role_policy_attachment" "deploy" {
+  role       = "${aws_iam_role.default.id}"
+  policy_arn = "${aws_iam_policy.deploy.arn}"
+}
+
+resource "aws_iam_policy" "deploy" {
   name   = "${module.codepipeline_codedeploy_policy_label.id}"
   policy = "${data.aws_iam_policy_document.deploy.json}"
 }
@@ -146,6 +151,8 @@ resource "aws_codepipeline" "source_build_deploy_bg" {
     "aws_iam_role_policy_attachment.s3",
     "aws_iam_role_policy_attachment.codebuild",
     "aws_iam_role_policy_attachment.codebuild_s3",
+    "aws_iam_role_policy_attachment.deploy",
+    "aws_iam_role_policy_attachment.ecs_limited",
   ]
 
   stage {
