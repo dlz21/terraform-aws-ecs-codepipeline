@@ -1,6 +1,6 @@
 resource "aws_iam_role_policy_attachment" "ecs_limited" {
   role       = "${aws_iam_role.default.id}"
-  policy_arn = "${aws_iam_policy.ecs_limited}"
+  policy_arn = "${aws_iam_policy.ecs_limited.arn}"
 }
 
 module "codepipeline_ecs_limited_policy_label" {

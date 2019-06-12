@@ -3,10 +3,10 @@
 
 [![Cloud Posse][logo]](https://cpco.io/homepage)
 
-# terraform-aws-ecs-codepipeline [![Build Status](https://travis-ci.org/cloudposse/terraform-aws-ecs-codepipeline.svg?branch=master)](https://travis-ci.org/cloudposse/terraform-aws-ecs-codepipeline) [![Latest Release](https://img.shields.io/github/release/cloudposse/terraform-aws-ecs-codepipeline.svg)](https://github.com/cloudposse/terraform-aws-ecs-codepipeline/releases/latest) [![Slack Community](https://slack.cloudposse.com/badge.svg)](https://slack.cloudposse.com)
+# terraform-aws-ecs-codepipeline-bg [![Build Status](https://travis-ci.org/cloudposse/terraform-aws-ecs-codepipeline.svg?branch=master)](https://travis-ci.org/cloudposse/terraform-aws-ecs-codepipeline) [![Latest Release](https://img.shields.io/github/release/cloudposse/terraform-aws-ecs-codepipeline.svg)](https://github.com/cloudposse/terraform-aws-ecs-codepipeline/releases/latest) [![Slack Community](https://slack.cloudposse.com/badge.svg)](https://slack.cloudposse.com)
 
 
-Terraform Module for CI/CD with AWS Code Pipeline using GitHub webhook triggers and Code Build for ECS.
+Terraform Module for CI/CD with AWS Code Pipeline using GitHub webhook triggers and Code Build for ECS Blue/Green.
 
 
 ---
@@ -53,7 +53,7 @@ Instead pin to the release tag (e.g. `?ref=tags/x.y.z`) of one of our [latest re
 In this example, we'll trigger the pipeline anytime the `master` branch is updated.
 ```hcl
 module "ecs_push_pipeline" {
-  source             = "git::https://github.com/cloudposse/terraform-aws-ecs-codepipeline.git?ref=master"
+  source             = "git::https://github.com/cloudposse/terraform-aws-ecs-codepipeline-bg.git?ref=master"
   name               = "app"
   namespace          = "eg"
   stage              = "staging"
@@ -73,7 +73,7 @@ In this example, we'll trigger anytime a new GitHub release is cut by setting th
 
 ```hcl
 module "ecs_release_pipeline" {
-  source                      = "git::https://github.com/cloudposse/terraform-aws-ecs-codepipeline.git?ref=master"
+  source                      = "git::https://github.com/cloudposse/terraform-aws-ecs-codepipeline-bg.git?ref=master"
   name                        = "app"
   namespace                   = "eg"
   stage                       = "staging"
@@ -229,7 +229,7 @@ For additional context, refer to some of these links.
 
 **Got a question?**
 
-File a GitHub [issue](https://github.com/cloudposse/terraform-aws-ecs-codepipeline/issues), send us an [email][email] or join our [Slack Community][slack].
+File a GitHub [issue](https://github.com/cloudposse/terraform-aws-ecs-codepipeline-bg/issues), send us an [email][email] or join our [Slack Community][slack].
 
 [![README Commercial Support][readme_commercial_support_img]][readme_commercial_support_link]
 
