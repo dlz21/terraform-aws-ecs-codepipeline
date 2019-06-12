@@ -180,11 +180,6 @@ variable "s3_bucket_force_destroy" {
   default     = false
 }
 
-variable "blue_green_enabled" {
-  description = "A boolean that indicates whether the deployment should use blue green."
-  default     = "false"
-}
-
 variable "code_deploy_application_name" {
   description = "The application name for CodeDeployToECS"
   default     = ""
@@ -192,5 +187,15 @@ variable "code_deploy_application_name" {
 
 variable "code_deploy_deployment_group_name" {
   description = "The group name for CodeDeployToECS"
+  default     = ""
+}
+
+variable "code_deploy_sns_topic_arn" {
+  description = "The SNS topic to send notification messages"
+  default     = ""
+}
+
+variable "code_deploy_lambda_hook_arns" {
+  description = "The lambda arns this code depoloy app should be permitted to access."
   default     = ""
 }

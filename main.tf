@@ -1,6 +1,5 @@
 locals {
   enabled = "${var.enabled == "true" ? true : false}"
-  blue_green_enabled = "${var.blue_green_enabled == "true" ? true : false}"
 }
 
 module "codepipeline_label" {
@@ -47,7 +46,7 @@ data "aws_iam_policy_document" "assume" {
 
     principals {
       type        = "Service"
-      identifiers = ["codepipeline.amazonaws.com"]
+      identifiers = ["codepipeline.amazonaws.com", "codedeploy.amazonaws.com"]
     }
 
     effect = "Allow"
@@ -201,82 +200,6 @@ resource "aws_iam_role_policy_attachment" "codebuild_s3" {
   policy_arn = "${aws_iam_policy.s3.arn}"
 }
 
-resource "aws_codepipeline" "source_build_deploy" {
-  count    = "${local.enabled && local.blue_green_enabled ? 0 : 1}"
-  name     = "${module.codepipeline_label.id}"
-  role_arn = "${aws_iam_role.default.arn}"
-
-  artifact_store {
-    location = "${aws_s3_bucket.default.bucket}"
-    type     = "S3"
-  }
-
-  depends_on = [
-    "aws_iam_role_policy_attachment.default",
-    "aws_iam_role_policy_attachment.s3",
-    "aws_iam_role_policy_attachment.codebuild",
-    "aws_iam_role_policy_attachment.codebuild_s3",
-  ]
-
-  stage {
-    name = "Source"
-
-    action {
-      name             = "Source"
-      category         = "Source"
-      owner            = "ThirdParty"
-      provider         = "GitHub"
-      version          = "1"
-      output_artifacts = ["code"]
-
-      configuration {
-        OAuthToken           = "${var.github_oauth_token}"
-        Owner                = "${var.repo_owner}"
-        Repo                 = "${var.repo_name}"
-        Branch               = "${var.branch}"
-        PollForSourceChanges = "${var.poll_source_changes}"
-      }
-    }
-  }
-
-  stage {
-    name = "Build"
-
-    action {
-      name     = "Build"
-      category = "Build"
-      owner    = "AWS"
-      provider = "CodeBuild"
-      version  = "1"
-
-      input_artifacts  = ["code"]
-      output_artifacts = ["task"]
-
-      configuration {
-        ProjectName = "${module.build.project_name}"
-      }
-    }
-  }
-
-  stage {
-    name = "Deploy"
-
-    action {
-      name            = "Deploy"
-      category        = "Deploy"
-      owner           = "AWS"
-      provider        = "ECS"
-      input_artifacts = ["task"]
-      version         = "1"
-
-      configuration {
-        ClusterName = "${var.ecs_cluster_name}"
-        ServiceName = "${var.service_name}"
-      }
-    }
-  }
-}
-
 resource "random_string" "webhook_secret" {
   count  = "${local.enabled && var.webhook_enabled == "true" ? 1 : 0}"
   length = 32
@@ -295,7 +218,7 @@ resource "aws_codepipeline_webhook" "webhook" {
   name            = "${module.codepipeline_label.id}"
   authentication  = "${var.webhook_authentication}"
   target_action   = "${var.webhook_target_action}"
-  target_pipeline = "${var.blue_green_enabled == "true" ? join("", aws_codepipeline.source_build_deploy_bg.*.name) : join("", aws_codepipeline.source_build_deploy.*.name)}"
+  target_pipeline = "${join("", aws_codepipeline.source_build_deploy_bg.*.name)}"
 
   authentication_configuration {
     secret_token = "${local.webhook_secret}"

@@ -180,9 +180,10 @@ Available targets:
 | webhook_filter_json_path | The JSON path to filter on. | string | `$.ref` | no |
 | webhook_filter_match_equals | The value to match on (e.g. refs/heads/{Branch}) | string | `refs/heads/{Branch}` | no |
 | webhook_target_action | The name of the action in a pipeline you want to connect to the webhook. The action must be from the source (first) stage of the pipeline. | string | `Source` | no |
-| blue_green_enabled | Whether to deploy using ECS Blue/Green. | string | `false` | no |
 | code_deploy_application_name | Code Deploy application name. | string | `` | no |
 | code_deploy_deployment_group_name | Code Deploy deployment group name. | string | `` | no |
+| code_deploy_sns_topic_arn | The SNS topic to send notification messages. | string | `` | no |
+| code_deploy_lambda_hook_arns | The lambda arns this code depoloy app should be permitted to access. | string | `` | no |
 
 ## Outputs
 

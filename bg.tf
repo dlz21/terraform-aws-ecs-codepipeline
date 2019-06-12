@@ -1,5 +1,138 @@
+resource "aws_iam_role_policy_attachment" "ecs_limited" {
+  role       = "${aws_iam_role.default.id}"
+  policy_arn = "${aws_iam_policy.ecs_limited}"
+}
+
+module "codepipeline_ecs_limited_policy_label" {
+  source     = "github.com/cloudposse/terraform-terraform-label.git?ref=0.2.1"
+  attributes = ["${compact(concat(var.attributes, list("codepipeline", "ecs", "limited")))}"]
+  delimiter  = "${var.delimiter}"
+  name       = "${var.name}"
+  namespace  = "${var.namespace}"
+  stage      = "${var.stage}"
+  tags       = "${var.tags}"
+}
+
+resource "aws_iam_policy" "ecs_limited" {
+  name   = "${module.codepipeline_ecs_limited_policy_label.id}"
+  policy = "${data.aws_iam_policy_document.ecs_limited.json}"
+}
+
+data "aws_iam_policy_document" "ecs_limited" {
+  statement {
+    sid = ""
+
+    actions = [
+      "ecs:DescribeServices",
+      "ecs:CreateTaskSet",
+      "ecs:UpdateServicePrimaryTaskSet",
+      "ecs:DeleteTaskSet",
+      "cloudwatch:DescribeAlarms"
+    ]
+
+    resources = ["*"]
+    effect    = "Allow"
+  }
+
+  statement {
+    actions   = ["sns:publish"]
+    resources = ["${var.code_deploy_sns_topic_arn == "" ? "" : var.code_deploy_sns_topic_arn}"]
+    effect    = "Allow"
+  }
+
+  statement {
+    actions = [
+      "elasticloadbalancing:DescribeTargetGroups",
+      "elasticloadbalancing:DescribeListeners",
+      "elasticloadbalancing:ModifyListener",
+      "elasticloadbalancing:DescribeRules",
+      "elasticloadbalancing:ModifyRule"
+    ]
+
+    resources = "*"
+    effect    = "Allow"
+  }
+
+  statement {
+    actions = [
+      "lambda:InvokeFunction"
+    ]
+
+    resources = ["${var.code_deploy_lambda_hook_arns == "" ? "" : var.code_deploy_lambda_hook_arns}"]
+    effect    = "Allow"
+  }
+
+  statement {
+    actions = [
+      "s3:GetObject",
+      "s3:GetObjectMetadata",
+      "s3:GetObjectVersion"
+    ]
+
+    resources  = "*"
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:ExistingObjectTag/UseWithCodeDeploy"
+      values   = ["true"]
+    }
+
+    effect     = "Allow"
+  }
+
+  statement {
+    actions = ["iam:PassRole"]
+
+    resources = [
+      "arn:aws:iam::*:role/ecsTaskExecutionRole",
+      "arn::aws:iam::*:role/ECSTaskExecution*"
+    ]
+    condition {
+      test     = "StringLike"
+      variable = "iam:PassedToService"
+      values   = "ecs-tasks.amazonaws.com"
+    }
+  }
+}
+
+module "codepipeline_codedeploy_policy_label" {
+  source     = "github.com/cloudposse/terraform-terraform-label.git?ref=0.2.1"
+  attributes = ["${compact(concat(var.attributes, list("codepipeline", "codedeploy")))}"]
+  delimiter  = "${var.delimiter}"
+  name       = "${var.name}"
+  namespace  = "${var.namespace}"
+  stage      = "${var.stage}"
+  tags       = "${var.tags}"
+}
+
+resource "aws_iam_policy" "ecs_limited" {
+  name   = "${module.codepipeline_codedeploy_policy_label.id}"
+  policy = "${data.aws_iam_policy_document.deploy.json}"
+}
+
+data "aws_iam_policy_document" "deploy" {
+  statement {
+    sid = ""
+
+    actions = [
+      "codedeploy:CreateDeployment",
+      "codedeploy:GetApplicationRevision",
+      "codedeploy:RegisterApplicationRevision",
+      "codedeploy:GetDeploymentConfig",
+      "codedeploy:GetDeployment",
+      "codedeploy:StopDeployment",
+      "codedeploy:ContinueDeployment",
+      "codedeploy:GetApplication"
+    ]
+
+    resources = ["*"]
+    effect    = "Allow"
+  }
+}
+
+
 resource "aws_codepipeline" "source_build_deploy_bg" {
-  count    = "${local.enabled && local.blue_green_enabled ? 1 : 0}"
+  count    = "${local.enabled ? 1 : 0}"
   name     = "${module.codepipeline_label.id}"
   role_arn = "${aws_iam_role.default.arn}"
 
