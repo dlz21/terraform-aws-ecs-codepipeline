@@ -49,7 +49,7 @@ data "aws_iam_policy_document" "ecs_limited" {
       "elasticloadbalancing:ModifyRule"
     ]
 
-    resources = "*"
+    resources = ["*"]
     effect    = "Allow"
   }
 
@@ -69,7 +69,7 @@ data "aws_iam_policy_document" "ecs_limited" {
       "s3:GetObjectVersion"
     ]
 
-    resources  = "*"
+    resources  = ["*"]
 
     condition {
       test     = "StringEquals"
@@ -90,7 +90,7 @@ data "aws_iam_policy_document" "ecs_limited" {
     condition {
       test     = "StringLike"
       variable = "iam:PassedToService"
-      values   = "ecs-tasks.amazonaws.com"
+      values   = ["ecs-tasks.amazonaws.com"]
     }
   }
 }
