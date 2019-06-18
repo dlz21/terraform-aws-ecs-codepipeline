@@ -85,7 +85,7 @@ data "aws_iam_policy_document" "ecs_limited" {
 
     resources = [
       "arn:aws:iam::*:role/ecsTaskExecutionRole",
-      "arn::aws:iam::*:role/ECSTaskExecution*"
+      "arn:aws:iam::*:role/ECSTaskExecution*"
     ]
     condition {
       test     = "StringLike"
