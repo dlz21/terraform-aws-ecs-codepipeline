@@ -22,26 +22,30 @@ resource "aws_s3_bucket" "default" {
   lifecycle_rule {
     id      = "code"
     enabled = "${var.pipeline_bucket_lifecycle_enabled}"
-
     prefix  = "${format("%.20s/code/", module.codebuild_label.id)}"
+
+    abort_incomplete_multipart_upload_days = "7"
     noncurrent_version_expiration {
       days = "${var.pipeline_bucket_lifecycle_expiration_days}"
     }
     expiration {
       days = "${var.pipeline_bucket_lifecycle_expiration_days}"
+      expired_object_delete_marker = "false"
     }
   }
 
   lifecycle_rule {
     id      = "task"
     enabled = "${var.pipeline_bucket_lifecycle_enabled}"
-
     prefix  = "${format("%.20s/task/", module.codebuild_label.id)}"
+
+    abort_incomplete_multipart_upload_days = "7"
     noncurrent_version_expiration {
       days = "${var.pipeline_bucket_lifecycle_expiration_days}"
     }
     expiration {
       days = "${var.pipeline_bucket_lifecycle_expiration_days}"
+      expired_object_delete_marker = "false"
     }
   }
 }
