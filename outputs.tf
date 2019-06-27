@@ -13,3 +13,8 @@ output "webhook_url" {
   value       = "${local.webhook_url}"
   sensitive   = true
 }
+
+output "default_role_arn" {
+  description = "The CodePipeline Service Role Arn"
+  value       = "${join("", aws_iam_role.default.*.arn)}"
+}

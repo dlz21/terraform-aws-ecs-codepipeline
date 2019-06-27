@@ -18,6 +18,16 @@ variable "enabled" {
   description = "Enable `CodePipeline` creation"
 }
 
+variable "pipeline_bucket_lifecycle_enabled" {
+  default     = "false"
+  description = "Enable bucket lifecycle rules."
+}
+
+variable "pipeline_bucket_lifecycle_expiration_days" {
+  default     = "60"
+  description = "The amount of days before expiring a bucket object; default:60."
+}
+
 variable "ecs_cluster_name" {
   type        = "string"
   description = "ECS Cluster Name"
@@ -178,4 +188,24 @@ variable "webhook_filter_match_equals" {
 variable "s3_bucket_force_destroy" {
   description = "A boolean that indicates all objects should be deleted from the CodePipeline artifact store S3 bucket so that the bucket can be destroyed without error"
   default     = false
+}
+
+variable "code_deploy_application_name" {
+  description = "The application name for CodeDeployToECS"
+  default     = ""
+}
+
+variable "code_deploy_deployment_group_name" {
+  description = "The group name for CodeDeployToECS"
+  default     = ""
+}
+
+variable "code_deploy_sns_topic_arn" {
+  description = "The SNS topic to send notification messages"
+  default     = ""
+}
+
+variable "code_deploy_lambda_hook_arns" {
+  description = "The lambda arns this code depoloy app should be permitted to access."
+  default     = ""
 }

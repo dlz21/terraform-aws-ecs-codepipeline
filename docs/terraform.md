@@ -14,6 +14,8 @@
 | delimiter | Delimiter to be used between `name`, `namespace`, `stage`, etc. | string | `-` | no |
 | ecs_cluster_name | ECS Cluster Name | string | - | yes |
 | enabled | Enable `CodePipeline` creation | string | `true` | no |
+| pipeline_bucket_lifecycle_enabled | Enable bucket lifecycle rules. | string | `false` | no |
+| pipeline_bucket_lifecycle_expiration_days | The amount of days before expiring a bucket object | string | `60` | no |
 | environment_variables | A list of maps, that contain both the key 'name' and the key 'value' to be used as additional environment variables for the build. | list | `<list>` | no |
 | github_oauth_token | GitHub OAuth Token with permissions to access private repositories | string | - | yes |
 | github_webhook_events | A list of events which should trigger the webhook. See a list of [available events](https://developer.github.com/v3/activity/events/types/) | list | `<list>` | no |
@@ -35,6 +37,10 @@
 | webhook_filter_json_path | The JSON path to filter on. | string | `$.ref` | no |
 | webhook_filter_match_equals | The value to match on (e.g. refs/heads/{Branch}) | string | `refs/heads/{Branch}` | no |
 | webhook_target_action | The name of the action in a pipeline you want to connect to the webhook. The action must be from the source (first) stage of the pipeline. | string | `Source` | no |
+| code_deploy_application_name | Code Deploy application name. | string | `` | no |
+| code_deploy_deployment_group_name | Code Deploy deployment group name. | string | `` | no |
+| code_deploy_sns_topic_arn | The SNS topic to send notification messages. | string | `` | no |
+| code_deploy_lambda_hook_arns | The lambda arns this code depoloy app should be permitted to access. | string | `` | no |
 
 ## Outputs
 
@@ -43,4 +49,4 @@
 | badge_url | The URL of the build badge when badge_enabled is enabled |
 | webhook_id | The CodePipeline webhook's ARN. |
 | webhook_url | The CodePipeline webhook's URL. POST events to this endpoint to trigger the target |
-
+| default_role_arn | The CodePipeline role arn |

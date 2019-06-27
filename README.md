@@ -11,7 +11,7 @@ Terraform Module for CI/CD with AWS Code Pipeline using GitHub webhook triggers 
 
 ---
 
-This project is part of our comprehensive ["SweetOps"](https://cpco.io/sweetops) approach towards DevOps. 
+This project is part of our comprehensive ["SweetOps"](https://cpco.io/sweetops) approach towards DevOps.
 [<img align="right" title="Share via Email" src="https://docs.cloudposse.com/images/ionicons/ios-email-outline-2.0.1-16x16-999999.svg"/>][share_email]
 [<img align="right" title="Share on Google+" src="https://docs.cloudposse.com/images/ionicons/social-googleplus-outline-2.0.1-16x16-999999.svg" />][share_googleplus]
 [<img align="right" title="Share on Facebook" src="https://docs.cloudposse.com/images/ionicons/social-facebook-outline-2.0.1-16x16-999999.svg" />][share_facebook]
@@ -32,7 +32,7 @@ It's 100% Open Source and licensed under the [APACHE2](LICENSE).
 
 
 
-We literally have [*hundreds of terraform modules*][terraform_modules] that are Open Source and well-maintained. Check them out! 
+We literally have [*hundreds of terraform modules*][terraform_modules] that are Open Source and well-maintained. Check them out!
 
 
 
@@ -159,6 +159,8 @@ Available targets:
 | delimiter | Delimiter to be used between `name`, `namespace`, `stage`, etc. | string | `-` | no |
 | ecs_cluster_name | ECS Cluster Name | string | - | yes |
 | enabled | Enable `CodePipeline` creation | string | `true` | no |
+| pipeline_bucket_lifecycle_enabled | Enable bucket lifecycle rules. | string | `false` | no |
+| pipeline_bucket_lifecycle_expiration_days | The amount of days before expiring a bucket object | string | `60` | no |
 | environment_variables | A list of maps, that contain both the key 'name' and the key 'value' to be used as additional environment variables for the build. | list | `<list>` | no |
 | github_oauth_token | GitHub OAuth Token with permissions to access private repositories | string | - | yes |
 | github_webhook_events | A list of events which should trigger the webhook. See a list of [available events](https://developer.github.com/v3/activity/events/types/) | list | `<list>` | no |
@@ -180,6 +182,10 @@ Available targets:
 | webhook_filter_json_path | The JSON path to filter on. | string | `$.ref` | no |
 | webhook_filter_match_equals | The value to match on (e.g. refs/heads/{Branch}) | string | `refs/heads/{Branch}` | no |
 | webhook_target_action | The name of the action in a pipeline you want to connect to the webhook. The action must be from the source (first) stage of the pipeline. | string | `Source` | no |
+| code_deploy_application_name | Code Deploy application name. | string | `` | no |
+| code_deploy_deployment_group_name | Code Deploy deployment group name. | string | `` | no |
+| code_deploy_sns_topic_arn | The SNS topic to send notification messages. | string | `` | no |
+| code_deploy_lambda_hook_arns | The lambda arns this code depoloy app should be permitted to access. | string | `` | no |
 
 ## Outputs
 
@@ -188,13 +194,14 @@ Available targets:
 | badge_url | The URL of the build badge when badge_enabled is enabled |
 | webhook_id | The CodePipeline webhook's ARN. |
 | webhook_url | The CodePipeline webhook's URL. POST events to this endpoint to trigger the target |
+| default_role_arn | The CodePipeline role arn |
 
 
 
 
-## Share the Love 
+## Share the Love
 
-Like this project? Please give it a ★ on [our GitHub](https://github.com/cloudposse/terraform-aws-ecs-codepipeline)! (it helps us **a lot**) 
+Like this project? Please give it a ★ on [our GitHub](https://github.com/cloudposse/terraform-aws-ecs-codepipeline)! (it helps us **a lot**)
 
 Are you using this project or any of our other projects? Consider [leaving a testimonial][testimonial]. =)
 
@@ -216,7 +223,7 @@ Check out these related projects.
 
 ## References
 
-For additional context, refer to some of these links. 
+For additional context, refer to some of these links.
 
 - [aws_codepipeline_webhook](https://www.terraform.io/docs/providers/aws/r/codepipeline_webhook.html) - Provides a CodePipeline Webhook
 
@@ -231,9 +238,9 @@ File a GitHub [issue](https://github.com/cloudposse/terraform-aws-ecs-codepipeli
 
 ## Commercial Support
 
-Work directly with our team of DevOps experts via email, slack, and video conferencing. 
+Work directly with our team of DevOps experts via email, slack, and video conferencing.
 
-We provide [*commercial support*][commercial_support] for all of our [Open Source][github] projects. As a *Dedicated Support* customer, you have access to our team of subject matter experts at a fraction of the cost of a full-time engineer. 
+We provide [*commercial support*][commercial_support] for all of our [Open Source][github] projects. As a *Dedicated Support* customer, you have access to our team of subject matter experts at a fraction of the cost of a full-time engineer.
 
 [![E-Mail](https://img.shields.io/badge/email-hello@cloudposse.com-blue.svg)][email]
 
@@ -243,7 +250,7 @@ We provide [*commercial support*][commercial_support] for all of our [Open Sourc
 - **Bug Fixes.** We'll rapidly work to fix any bugs in our projects.
 - **Build New Terraform Modules.** We'll [develop original modules][module_development] to provision infrastructure.
 - **Cloud Architecture.** We'll assist with your cloud strategy and design.
-- **Implementation.** We'll provide hands-on support to implement our reference architectures. 
+- **Implementation.** We'll provide hands-on support to implement our reference architectures.
 
 
 
@@ -258,7 +265,7 @@ Join our [Open Source Community][slack] on Slack. It's **FREE** for everyone! Ou
 
 ## Newsletter
 
-Signup for [our newsletter][newsletter] that covers everything on our technology radar.  Receive updates on what we're up to on GitHub as well as awesome new projects we discover. 
+Signup for [our newsletter][newsletter] that covers everything on our technology radar.  Receive updates on what we're up to on GitHub as well as awesome new projects we discover.
 
 ## Contributing
 
@@ -287,9 +294,9 @@ Copyright © 2017-2019 [Cloud Posse, LLC](https://cpco.io/copyright)
 
 
 
-## License 
+## License
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) 
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 See [LICENSE](LICENSE) for full details.
 
@@ -330,7 +337,7 @@ This project is maintained and funded by [Cloud Posse, LLC][website]. Like it? P
 
 We're a [DevOps Professional Services][hire] company based in Los Angeles, CA. We ❤️  [Open Source Software][we_love_open_source].
 
-We offer [paid support][commercial_support] on all of our projects.  
+We offer [paid support][commercial_support] on all of our projects.
 
 Check out [our other projects][github], [follow us on twitter][twitter], [apply for a job][jobs], or [hire us][hire] to help with your cloud strategy and implementation.
 
