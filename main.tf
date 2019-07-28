@@ -154,8 +154,8 @@ data "aws_iam_policy_document" "s3" {
     ]
 
     resources = [
-      "${aws_s3_bucket.default.arn}",
-      "${aws_s3_bucket.default.arn}/*",
+      "${aws_s3_bucket.default[count.index].arn}",
+      "${aws_s3_bucket.default[count.index].arn}/*",
     ]
 
     effect = "Allow"
