@@ -85,8 +85,8 @@ data "aws_iam_policy_document" "assume" {
 
 resource "aws_iam_role_policy_attachment" "default" {
   count      = "${local.enabled ? 1 : 0}"
-  role       = "${aws_iam_role.default.id}"
-  policy_arn = "${aws_iam_policy.default.arn}"
+  role       = "${aws_iam_role.default[count.index].id}"
+  policy_arn = "${aws_iam_policy.default[count.index].arn}"
 }
 
 resource "aws_iam_policy" "default" {
@@ -137,7 +137,7 @@ module "codepipeline_s3_policy_label" {
 resource "aws_iam_policy" "s3" {
   count  = "${local.enabled ? 1 : 0}"
   name   = "${module.codepipeline_s3_policy_label.id}"
-  policy = "${data.aws_iam_policy_document.s3.json}"
+  policy = "${data.aws_iam_policy_document.s3[count.index].json}"
 }
 
 data "aws_iam_policy_document" "s3" {
