@@ -120,8 +120,8 @@ data "aws_iam_policy_document" "default" {
 
 resource "aws_iam_role_policy_attachment" "s3" {
   count      = "${local.enabled ? 1 : 0}"
-  role       = "${aws_iam_role.default.id}"
-  policy_arn = "${aws_iam_policy.s3.arn}"
+  role       = "${aws_iam_role.default[count.index].id}"
+  policy_arn = "${aws_iam_policy.s3[count.index].arn}"
 }
 
 module "codepipeline_s3_policy_label" {
@@ -164,8 +164,8 @@ data "aws_iam_policy_document" "s3" {
 
 resource "aws_iam_role_policy_attachment" "codebuild" {
   count      = "${local.enabled ? 1 : 0}"
-  role       = "${aws_iam_role.default.id}"
-  policy_arn = "${aws_iam_policy.codebuild.arn}"
+  role       = "${aws_iam_role.default[count.index].id}"
+  policy_arn = "${aws_iam_policy.codebuild[count.index].arn}"
 }
 
 module "codebuild_label" {
@@ -202,7 +202,7 @@ data "aws_caller_identity" "default" {}
 data "aws_region" "default" {}
 
 module "build" {
-  source                = "git::https://github.com/cloudposse/terraform-aws-codebuild.git?ref=tags/0.16.0"
+  source                = "git::https://github.com/cloudposse/terraform-aws-codebuild.git?ref=tags/0.17.0"
   enabled               = "${var.enabled}"
   namespace             = "${var.namespace}"
   name                  = "${var.name}"
@@ -227,7 +227,7 @@ module "build" {
 resource "aws_iam_role_policy_attachment" "codebuild_s3" {
   count      = "${local.enabled ? 1 : 0}"
   role       = "${module.build.role_id}"
-  policy_arn = "${aws_iam_policy.s3.arn}"
+  policy_arn = "${aws_iam_policy.s3[count.index].arn}"
 }
 
 resource "random_string" "webhook_secret" {
