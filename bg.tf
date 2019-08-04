@@ -133,10 +133,10 @@ data "aws_iam_policy_document" "deploy" {
 resource "aws_codepipeline" "source_build_deploy_bg" {
   count    = "${local.enabled ? 1 : 0}"
   name     = "${module.codepipeline_label.id}"
-  role_arn = "${aws_iam_role.default.arn}"
+  role_arn = "${element(concat(aws_iam_role.default.*.arn, list("")), 0)}"
 
   artifact_store {
-    location = "${aws_s3_bucket.default.bucket}"
+    location = "${element(concat(aws_s3_bucket.default.*.bucket, list("")), 0)}"
     type     = "S3"
   }
 
