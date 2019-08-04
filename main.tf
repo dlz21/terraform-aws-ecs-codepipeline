@@ -269,5 +269,5 @@ module "github_webhooks" {
   webhook_url          = "${local.webhook_url}"
   webhook_secret       = "${local.webhook_secret}"
   webhook_content_type = "json"
-  events               = ["${var.github_webhook_events}"]
+  events               = "${var.github_webhook_events}"
 }
