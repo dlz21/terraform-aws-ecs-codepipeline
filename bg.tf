@@ -160,7 +160,7 @@ resource "aws_codepipeline" "source_build_deploy_bg" {
       version          = "1"
       output_artifacts = ["code"]
 
-      configuration {
+      configuration = {
         OAuthToken           = "${var.github_oauth_token}"
         Owner                = "${var.repo_owner}"
         Repo                 = "${var.repo_name}"
@@ -183,7 +183,7 @@ resource "aws_codepipeline" "source_build_deploy_bg" {
       input_artifacts  = ["code"]
       output_artifacts = ["task"]
 
-      configuration {
+      configuration = {
         ProjectName = "${module.build.project_name}"
       }
     }
@@ -200,7 +200,7 @@ resource "aws_codepipeline" "source_build_deploy_bg" {
       input_artifacts = ["task"]
       version         = "1"
 
-      configuration {
+      configuration = {
         ApplicationName                = "${var.code_deploy_application_name}"
         DeploymentGroupName            = "${var.code_deploy_deployment_group_name}"
         TaskDefinitionTemplateArtifact = "task"
