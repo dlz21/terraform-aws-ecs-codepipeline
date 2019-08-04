@@ -100,7 +100,7 @@ module "codepipeline_codedeploy_policy_label" {
 }
 
 resource "aws_iam_role_policy_attachment" "deploy" {
-  role       = "${aws_iam_role.default.id}"
+  role       = "${element(concat(aws_iam_role.default.*.id, list("")), 0)}"
   policy_arn = "${aws_iam_policy.deploy.arn}"
 }
 

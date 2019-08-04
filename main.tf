@@ -85,8 +85,8 @@ data "aws_iam_policy_document" "assume" {
 
 resource "aws_iam_role_policy_attachment" "default" {
   count      = "${local.enabled ? 1 : 0}"
-  role       = "${aws_iam_role.default[count.index].id}"
-  policy_arn = "${aws_iam_policy.default[count.index].arn}"
+  role       = "${element(concat(aws_iam_role.default.*.id, list("")), 0)}"
+  policy_arn = "${element(concat(aws_iam_policy.default.*.arn, list("")), 0)}"
 }
 
 resource "aws_iam_policy" "default" {
@@ -120,8 +120,8 @@ data "aws_iam_policy_document" "default" {
 
 resource "aws_iam_role_policy_attachment" "s3" {
   count      = "${local.enabled ? 1 : 0}"
-  role       = "${aws_iam_role.default[count.index].id}"
-  policy_arn = "${aws_iam_policy.s3[count.index].arn}"
+  role       = "${element(concat(aws_iam_role.default.*.id, list("")), 0)}"
+  policy_arn = "${element(concat(aws_iam_policy.s3.*.arn, list("")), 0)}"
 }
 
 module "codepipeline_s3_policy_label" {
@@ -137,7 +137,7 @@ module "codepipeline_s3_policy_label" {
 resource "aws_iam_policy" "s3" {
   count  = "${local.enabled ? 1 : 0}"
   name   = "${module.codepipeline_s3_policy_label.id}"
-  policy = "${data.aws_iam_policy_document.s3[count.index].json}"
+  policy = "${element(concat(data.aws_iam_policy_document.s3.*.json, list("")), 0)}"
 }
 
 data "aws_iam_policy_document" "s3" {
@@ -154,8 +154,8 @@ data "aws_iam_policy_document" "s3" {
     ]
 
     resources = [
-      "${aws_s3_bucket.default[count.index].arn}",
-      "${aws_s3_bucket.default[count.index].arn}/*",
+      "${element(concat(aws_s3_bucket.default.*.arn, list("")), 0)}",
+      "${element(concat(aws_s3_bucket.default.*.arn, list("/*")), 0)}"
     ]
 
     effect = "Allow"
@@ -164,8 +164,8 @@ data "aws_iam_policy_document" "s3" {
 
 resource "aws_iam_role_policy_attachment" "codebuild" {
   count      = "${local.enabled ? 1 : 0}"
-  role       = "${aws_iam_role.default[count.index].id}"
-  policy_arn = "${aws_iam_policy.codebuild[count.index].arn}"
+  role       = "${element(concat(aws_iam_role.default.*.id, list("")), 0)}"
+  policy_arn = "${element(concat(aws_iam_policy.codebuild.*.arn, list("")), 0)}"
 }
 
 module "codebuild_label" {
@@ -227,7 +227,7 @@ module "build" {
 resource "aws_iam_role_policy_attachment" "codebuild_s3" {
   count      = "${local.enabled ? 1 : 0}"
   role       = "${module.build.role_id}"
-  policy_arn = "${aws_iam_policy.s3[count.index].arn}"
+  policy_arn = "${element(concat(aws_iam_policy.s3.*.arn, list("")), 0)}"
 }
 
 resource "random_string" "webhook_secret" {
