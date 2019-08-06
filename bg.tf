@@ -4,8 +4,8 @@ resource "aws_iam_role_policy_attachment" "ecs_limited" {
 }
 
 module "codepipeline_ecs_limited_policy_label" {
-  source     = "github.com/cloudposse/terraform-terraform-label.git?ref=0.2.1"
-  attributes = ["${compact(concat(var.attributes, list("codepipeline", "ecs", "limited")))}"]
+  source     = "github.com/cloudposse/terraform-terraform-label.git?ref=0.4.0"
+  attributes = "${compact(concat(var.attributes, list("codepipeline", "ecs", "limited")))}"
   delimiter  = "${var.delimiter}"
   name       = "${var.name}"
   namespace  = "${var.namespace}"
@@ -90,8 +90,8 @@ data "aws_iam_policy_document" "ecs_limited" {
 }
 
 module "codepipeline_codedeploy_policy_label" {
-  source     = "github.com/cloudposse/terraform-terraform-label.git?ref=0.2.1"
-  attributes = ["${compact(concat(var.attributes, list("codepipeline", "codedeploy")))}"]
+  source     = "github.com/cloudposse/terraform-terraform-label.git?ref=0.4.0"
+  attributes = "${compact(concat(var.attributes, list("codepipeline", "codedeploy")))}"
   delimiter  = "${var.delimiter}"
   name       = "${var.name}"
   namespace  = "${var.namespace}"
