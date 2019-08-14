@@ -36,7 +36,7 @@ data "aws_iam_policy_document" "ecs_limited" {
 
   statement {
     actions   = ["sns:publish"]
-    resources = ["${var.code_deploy_sns_topic_arn == "" ? "" : var.code_deploy_sns_topic_arn}", "arn:aws:sns:*:*:CodeDeployTopic_*"]
+    resources = ["${var.code_deploy_sns_topic_arn == "" ? "*" : var.code_deploy_sns_topic_arn}", "arn:aws:sns:*:*:CodeDeployTopic_*"]
     effect    = "Allow"
   }
 
@@ -58,7 +58,7 @@ data "aws_iam_policy_document" "ecs_limited" {
       "lambda:InvokeFunction"
     ]
 
-    resources = ["${var.code_deploy_lambda_hook_arns == "" ? "" : var.code_deploy_lambda_hook_arns}"]
+    resources = ["${var.code_deploy_lambda_hook_arns == "" ? "*" : var.code_deploy_lambda_hook_arns}"]
     effect    = "Allow"
   }
 
@@ -83,9 +83,7 @@ data "aws_iam_policy_document" "ecs_limited" {
   statement {
     actions = ["iam:PassRole"]
 
-    resources = [
-      "*"
-    ]
+    resources = ["*"]
   }
 }
 
