@@ -155,7 +155,7 @@ data "aws_iam_policy_document" "s3" {
 
     resources = [
       "${element(concat(aws_s3_bucket.default.*.arn, list("")), 0)}",
-      "${element(concat(aws_s3_bucket.default.*.arn, list("/*")), 0)}"
+      "${format("%s/*", element(concat(aws_s3_bucket.default.*.arn, list("")), 0))}"
     ]
 
     effect = "Allow"
