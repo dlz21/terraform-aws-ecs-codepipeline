@@ -1,11 +1,11 @@
 resource "aws_iam_role_policy_attachment" "ecs_limited" {
-  role       = "${aws_iam_role.default.id}"
+  role       = "${element(concat(aws_iam_role.default.*.id, list("")), 0)}"
   policy_arn = "${aws_iam_policy.ecs_limited.arn}"
 }
 
 module "codepipeline_ecs_limited_policy_label" {
-  source     = "github.com/cloudposse/terraform-terraform-label.git?ref=0.2.1"
-  attributes = ["${compact(concat(var.attributes, list("codepipeline", "ecs", "limited")))}"]
+  source     = "github.com/cloudposse/terraform-terraform-label.git?ref=0.4.0"
+  attributes = "${compact(concat(var.attributes, list("codepipeline", "ecs", "limited")))}"
   delimiter  = "${var.delimiter}"
   name       = "${var.name}"
   namespace  = "${var.namespace}"
@@ -36,7 +36,7 @@ data "aws_iam_policy_document" "ecs_limited" {
 
   statement {
     actions   = ["sns:publish"]
-    resources = ["${var.code_deploy_sns_topic_arn == "" ? "" : var.code_deploy_sns_topic_arn}", "arn:aws:sns:*:*:CodeDeployTopic_*"]
+    resources = ["${var.code_deploy_sns_topic_arn == "" ? "*" : var.code_deploy_sns_topic_arn}", "arn:aws:sns:*:*:CodeDeployTopic_*"]
     effect    = "Allow"
   }
 
@@ -58,7 +58,7 @@ data "aws_iam_policy_document" "ecs_limited" {
       "lambda:InvokeFunction"
     ]
 
-    resources = ["${var.code_deploy_lambda_hook_arns == "" ? "" : var.code_deploy_lambda_hook_arns}"]
+    resources = ["${var.code_deploy_lambda_hook_arns == "" ? "*" : var.code_deploy_lambda_hook_arns}"]
     effect    = "Allow"
   }
 
@@ -83,15 +83,13 @@ data "aws_iam_policy_document" "ecs_limited" {
   statement {
     actions = ["iam:PassRole"]
 
-    resources = [
-      "*"
-    ]
+    resources = ["*"]
   }
 }
 
 module "codepipeline_codedeploy_policy_label" {
-  source     = "github.com/cloudposse/terraform-terraform-label.git?ref=0.2.1"
-  attributes = ["${compact(concat(var.attributes, list("codepipeline", "codedeploy")))}"]
+  source     = "github.com/cloudposse/terraform-terraform-label.git?ref=0.4.0"
+  attributes = "${compact(concat(var.attributes, list("codepipeline", "codedeploy")))}"
   delimiter  = "${var.delimiter}"
   name       = "${var.name}"
   namespace  = "${var.namespace}"
@@ -100,7 +98,7 @@ module "codepipeline_codedeploy_policy_label" {
 }
 
 resource "aws_iam_role_policy_attachment" "deploy" {
-  role       = "${aws_iam_role.default.id}"
+  role       = "${element(concat(aws_iam_role.default.*.id, list("")), 0)}"
   policy_arn = "${aws_iam_policy.deploy.arn}"
 }
 
@@ -133,10 +131,10 @@ data "aws_iam_policy_document" "deploy" {
 resource "aws_codepipeline" "source_build_deploy_bg" {
   count    = "${local.enabled ? 1 : 0}"
   name     = "${module.codepipeline_label.id}"
-  role_arn = "${aws_iam_role.default.arn}"
+  role_arn = "${element(concat(aws_iam_role.default.*.arn, list("")), 0)}"
 
   artifact_store {
-    location = "${aws_s3_bucket.default.bucket}"
+    location = "${element(concat(aws_s3_bucket.default.*.bucket, list("")), 0)}"
     type     = "S3"
   }
 
@@ -160,7 +158,7 @@ resource "aws_codepipeline" "source_build_deploy_bg" {
       version          = "1"
       output_artifacts = ["code"]
 
-      configuration {
+      configuration = {
         OAuthToken           = "${var.github_oauth_token}"
         Owner                = "${var.repo_owner}"
         Repo                 = "${var.repo_name}"
@@ -183,7 +181,7 @@ resource "aws_codepipeline" "source_build_deploy_bg" {
       input_artifacts  = ["code"]
       output_artifacts = ["task"]
 
-      configuration {
+      configuration = {
         ProjectName = "${module.build.project_name}"
       }
     }
@@ -200,7 +198,7 @@ resource "aws_codepipeline" "source_build_deploy_bg" {
       input_artifacts = ["task"]
       version         = "1"
 
-      configuration {
+      configuration = {
         ApplicationName                = "${var.code_deploy_application_name}"
         DeploymentGroupName            = "${var.code_deploy_deployment_group_name}"
         TaskDefinitionTemplateArtifact = "task"

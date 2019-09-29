@@ -3,8 +3,8 @@ locals {
 }
 
 module "codepipeline_label" {
-  source     = "github.com/cloudposse/terraform-terraform-label.git?ref=0.2.1"
-  attributes = ["${compact(concat(var.attributes, list("codepipeline")))}"]
+  source     = "github.com/cloudposse/terraform-terraform-label.git?ref=0.4.0"
+  attributes = "${compact(concat(var.attributes, list("codepipeline")))}"
   delimiter  = "${var.delimiter}"
   name       = "${var.name}"
   namespace  = "${var.namespace}"
@@ -51,8 +51,8 @@ resource "aws_s3_bucket" "default" {
 }
 
 module "codepipeline_assume_label" {
-  source     = "github.com/cloudposse/terraform-terraform-label.git?ref=0.2.1"
-  attributes = ["${compact(concat(var.attributes, list("codepipeline", "assume")))}"]
+  source     = "github.com/cloudposse/terraform-terraform-label.git?ref=0.4.0"
+  attributes = "${compact(concat(var.attributes, list("codepipeline", "assume")))}"
   delimiter  = "${var.delimiter}"
   name       = "${var.name}"
   namespace  = "${var.namespace}"
@@ -85,8 +85,8 @@ data "aws_iam_policy_document" "assume" {
 
 resource "aws_iam_role_policy_attachment" "default" {
   count      = "${local.enabled ? 1 : 0}"
-  role       = "${aws_iam_role.default.id}"
-  policy_arn = "${aws_iam_policy.default.arn}"
+  role       = "${element(concat(aws_iam_role.default.*.id, list("")), 0)}"
+  policy_arn = "${element(concat(aws_iam_policy.default.*.arn, list("")), 0)}"
 }
 
 resource "aws_iam_policy" "default" {
@@ -120,13 +120,13 @@ data "aws_iam_policy_document" "default" {
 
 resource "aws_iam_role_policy_attachment" "s3" {
   count      = "${local.enabled ? 1 : 0}"
-  role       = "${aws_iam_role.default.id}"
-  policy_arn = "${aws_iam_policy.s3.arn}"
+  role       = "${element(concat(aws_iam_role.default.*.id, list("")), 0)}"
+  policy_arn = "${element(concat(aws_iam_policy.s3.*.arn, list("")), 0)}"
 }
 
 module "codepipeline_s3_policy_label" {
-  source     = "github.com/cloudposse/terraform-terraform-label.git?ref=0.2.1"
-  attributes = ["${compact(concat(var.attributes, list("codepipeline", "s3")))}"]
+  source     = "github.com/cloudposse/terraform-terraform-label.git?ref=0.4.0"
+  attributes = "${compact(concat(var.attributes, list("codepipeline", "s3")))}"
   delimiter  = "${var.delimiter}"
   name       = "${var.name}"
   namespace  = "${var.namespace}"
@@ -137,7 +137,7 @@ module "codepipeline_s3_policy_label" {
 resource "aws_iam_policy" "s3" {
   count  = "${local.enabled ? 1 : 0}"
   name   = "${module.codepipeline_s3_policy_label.id}"
-  policy = "${data.aws_iam_policy_document.s3.json}"
+  policy = "${element(concat(data.aws_iam_policy_document.s3.*.json, list("")), 0)}"
 }
 
 data "aws_iam_policy_document" "s3" {
@@ -154,8 +154,8 @@ data "aws_iam_policy_document" "s3" {
     ]
 
     resources = [
-      "${aws_s3_bucket.default.arn}",
-      "${aws_s3_bucket.default.arn}/*",
+      "${element(concat(aws_s3_bucket.default.*.arn, list("")), 0)}",
+      "${format("%s/*", element(concat(aws_s3_bucket.default.*.arn, list("")), 0))}"
     ]
 
     effect = "Allow"
@@ -164,13 +164,13 @@ data "aws_iam_policy_document" "s3" {
 
 resource "aws_iam_role_policy_attachment" "codebuild" {
   count      = "${local.enabled ? 1 : 0}"
-  role       = "${aws_iam_role.default.id}"
-  policy_arn = "${aws_iam_policy.codebuild.arn}"
+  role       = "${element(concat(aws_iam_role.default.*.id, list("")), 0)}"
+  policy_arn = "${element(concat(aws_iam_policy.codebuild.*.arn, list("")), 0)}"
 }
 
 module "codebuild_label" {
-  source     = "github.com/cloudposse/terraform-terraform-label.git?ref=0.2.1"
-  attributes = ["${compact(concat(var.attributes, list("codebuild")))}"]
+  source     = "github.com/cloudposse/terraform-terraform-label.git?ref=0.4.0"
+  attributes = "${compact(concat(var.attributes, list("codebuild")))}"
   delimiter  = "${var.delimiter}"
   name       = "${var.name}"
   namespace  = "${var.namespace}"
@@ -202,7 +202,7 @@ data "aws_caller_identity" "default" {}
 data "aws_region" "default" {}
 
 module "build" {
-  source                = "git::https://github.com/cloudposse/terraform-aws-codebuild.git?ref=tags/0.16.0"
+  source                = "git::https://github.com/cloudposse/terraform-aws-codebuild.git?ref=tags/0.17.0"
   enabled               = "${var.enabled}"
   namespace             = "${var.namespace}"
   name                  = "${var.name}"
@@ -227,7 +227,7 @@ module "build" {
 resource "aws_iam_role_policy_attachment" "codebuild_s3" {
   count      = "${local.enabled ? 1 : 0}"
   role       = "${module.build.role_id}"
-  policy_arn = "${aws_iam_policy.s3.arn}"
+  policy_arn = "${element(concat(aws_iam_policy.s3.*.arn, list("")), 0)}"
 }
 
 resource "random_string" "webhook_secret" {
@@ -261,7 +261,7 @@ resource "aws_codepipeline_webhook" "webhook" {
 }
 
 module "github_webhooks" {
-  source               = "git::https://github.com/cloudposse/terraform-github-repository-webhooks.git?ref=tags/0.4.0"
+  source               = "git::https://github.com/cloudposse/terraform-github-repository-webhooks.git?ref=terraform-0.12"
   enabled              = "${local.enabled && var.webhook_enabled == "true" ? "true" : "false"}"
   github_organization  = "${var.repo_owner}"
   github_repositories  = ["${var.repo_name}"]
@@ -269,5 +269,5 @@ module "github_webhooks" {
   webhook_url          = "${local.webhook_url}"
   webhook_secret       = "${local.webhook_secret}"
   webhook_content_type = "json"
-  events               = ["${var.github_webhook_events}"]
+  events               = "${var.github_webhook_events}"
 }
